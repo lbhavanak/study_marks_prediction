@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Marks Prediction</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 16px;
+            color: #222;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Student Marks Prediction</h1>
+
+    <input type="text" id="name" placeholder="Student Name">
+    <input type="number" id="age" placeholder="Age">
+    <input type="text" id="className" placeholder="Class (e.g., 10th)">
+    <input type="number" id="hours" placeholder="Hours of Study">
+
+    <select id="subject">
+        <option value="">Select Subject</option>
+        <option value="Maths">Maths</option>
+        <option value="Science">Science</option>
+        <option value="English">English</option>
+        <option value="English">DSA</option>
+
+    </select>
+
+    <button onclick="predictMarks()">Student Predict Marks</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function predictMarks() {
+
+    const name = document.getElementById("name").value;
+    const age = document.getElementById("age").value;
+    const className = document.getElementById("className").value;
+    const hours = document.getElementById("hours").value;
+    const subject = document.getElementById("subject").value;
+
+    if (!name || !age || !className || !hours || !subject) {
+        document.getElementById("result").innerHTML =
+            "<span style='color:red'>Please fill all fields</span>";
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "https://study-marks-prediction-1.onrender.com/predict",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name,
+                    age,
+                    className,
+                    hours,
+                    subject
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("result").innerHTML = `
+            <p><span class="label">Student:</span> ${data.name}</p>
+            <p><span class="label">Age:</span> ${data.age}</p>
+            <p><span class="label">Class:</span> ${data.className}</p>
+            <p><span class="label">Subject:</span> ${data.subject}</p>
+            <p><span class="label">Predicted Marks:</span> ${data.marks}/100</p>
+        `;
+
+    } catch (error) {
+        document.getElementById("result").innerHTML =
+            "<span style='color:red'>Backend not reachable</span>";
+    }
+}
+</script>
+
+</body>
+</html>
